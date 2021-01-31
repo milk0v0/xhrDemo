@@ -37,6 +37,22 @@ router.get('/get/:id(\\d+)', ctx => {
     }
 });
 
+router.get('/xml', ctx => {
+    ctx.set('Content-Type', 'text/xml');
+    ctx.body = `<?xml version="1.0" encoding="utf-8" ?>
+        <books>
+            <node>
+                <name>nodejs</name>
+                <price>56元</price>
+            </node>
+            <react>
+                <name>react入门</name>
+                <price>50元</price>
+            </react>
+        </books>
+    `
+});
+
 router.post('/post', ctx => {
     console.log(ctx.request.body);
     ctx.body = {
