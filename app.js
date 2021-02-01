@@ -4,6 +4,8 @@ const KoaRouter = require('koa-router');
 const router = new KoaRouter();
 const KoaBody = require('koa-body');
 const usersData = require('./data/users.json');
+const fs = require('fs');
+const path = require('path');
 
 const KoaStaticCache = require('koa-static-cache');
 const koaBody = require('koa-body');
@@ -60,6 +62,21 @@ router.post('/post', ctx => {
         info: '请求成功'
     }
 });
+
+router.post('/upload', ctx => {
+    console.log(ctx.request.body);
+    console.log(ctx.request.files.img);
+    const readrStream = fs.createReadStream(ctx.request.files.img.path);
+    // 防止重名：临时地址名字+后缀
+    const writerStream = fs.createWriteStream(path.join('./static/imgs', path.basename(ctx.request.files.img.path) + path.extname(ctx.request.files.img.name)));
+    // 通过管道写入
+    readrStream.pipe(writerStream);
+
+    ctx.body = {
+        static: 1,
+        info: '请求成功'
+    }
+})
 
 app.use(router.routes());
 
