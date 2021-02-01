@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <input type="file" class="myFile" />
+    <button>点击上传文件</button>
+</body>
+<script>
+    const btn = document.querySelector('button');
+    const input = document.querySelector('.myFile');
+    btn.onclick = () => {
+        const file = input.files[0];
+        console.log(file);
+        // 组装 FormData
+        const form = new FormData();
+        form.append('img', file);
+        form.append('name', '图片');
+        // ajax
+        const xhr = new XMLHttpRequest();
+        xhr.open('post', '/upload', true);
+        xhr.onload = function() {
+            console.log(this.responseText);
+        }
+        // 发送 FormData 正文，可省略 Content-Type，会默认添加
+        xhr.send(form);
+    }
+</script>
+
+</html>
