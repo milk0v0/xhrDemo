@@ -16,6 +16,7 @@ app.use(KoaStaticCache('./static', {
 
 app.use(koaBody({ multipart: true }));
 
+// login.html
 router.get('/checkUserName', ctx => {
     let res = usersData.find(item => item.name === ctx.query.userName);
     if (res) {
@@ -31,6 +32,7 @@ router.get('/checkUserName', ctx => {
     }
 });
 
+// get.html
 router.get('/get/:id(\\d+)', ctx => {
     console.log(ctx.params);
     ctx.body = {
@@ -39,6 +41,7 @@ router.get('/get/:id(\\d+)', ctx => {
     }
 });
 
+// xml.html
 router.get('/xml', ctx => {
     ctx.set('Content-Type', 'text/xml');
     ctx.body = `<?xml version="1.0" encoding="utf-8" ?>
@@ -55,6 +58,7 @@ router.get('/xml', ctx => {
     `
 });
 
+// post.html
 router.post('/post', ctx => {
     console.log(ctx.request.body);
     ctx.body = {
@@ -63,6 +67,7 @@ router.post('/post', ctx => {
     }
 });
 
+// upload.html
 router.post('/upload', ctx => {
     console.log(ctx.request.body);
     console.log(ctx.request.files.img);
@@ -72,6 +77,14 @@ router.post('/upload', ctx => {
     // 通过管道写入
     readrStream.pipe(writerStream);
 
+    ctx.body = {
+        static: 1,
+        info: '请求成功'
+    }
+});
+
+// fileUpload.html
+router.post('/fileUpload', ctx => {
     ctx.body = {
         static: 1,
         info: '请求成功'
