@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <input type="file" class="myFile" />
+    <div>
+        进度：<progress value="0" max="100"></progress> <span class="progress">0</span>%
+    </div>
+    <div>
+        速度：<span class="speen">0</span> <span class="unit"></span>
+    </div>
+    <button>点击上传</button><button>取消上传</button>
+</body>
+<script>
+    const xhr = new XMLHttpRequest();
+    const btns = document.querySelectorAll('button');
+    let beforeTime;
+    let beforeLoaded;
+    btns[0].onclick = () => {
+        const file = document.querySelector('.myFile').files[0];
+        const form = new FormData();
+        form.append('file', file);
+        xhr.open('post', '/fileUpload', true);
+        xhr.onload = function () {
+            console.log(this.responseText);
+        }
+        xhr.upload.onloadstart = () => {
+            console.log('开始上传');
+            document.querySelector('.progress').innerHTML = document.querySelector('progress').value = 0;
+            beforeTime = Date.now();
+            beforeLoaded = 0;
+        }
+        xhr.upload.onprogress = e => {
+            // console.log('正在上传');
+            // 上传文件总大小 - e.total - 单位：b
+            // 当前上传的文件大小/已经上传了多少 - e.loaded - 单位：b
+            // 进度：当前上传的文件大小/上传文件总大小
+            const progress = e.loaded / e.total * 100;
+
+            // 速度：当前一次上传了文件大小/当前一次上传文件时间
+            const nowTime = (Date.now() - beforeTime) / 1000;
+            const nowLoaded = e.loaded - beforeLoaded;
+            let speed = nowLoaded / nowTime;
+
+            // 修改速度单位
+            let unit = 'b';
+            while (speed / 1024 >= 1) {
+                speed /= 1024;
+                if (unit === 'b') {
+                    unit = 'kb'
+                } else if (unit == 'kb') {
+                    unit = 'mb'
+                } else if (unit == 'mb') {
+                    unit = 'gb'
+                }
+            }
+            unit += '/s';
+
+            beforeTime = Date.now();
+            beforeLoaded = e.loaded;
+
+            document.querySelector('progress').value = progress;
+            document.querySelector('.progress').innerHTML = progress.toFixed(0);
+            document.querySelector('.speen').innerHTML = speed.toFixed(0);
+            document.querySelector('.unit').innerHTML = unit;
+        }
+        xhr.upload.onload = () => {
+            console.log('上传成功');
+        }
+        xhr.upload.onloadend = () => {
+            console.log('上传完成');
+        }
+        xhr.upload.onabort = () => {
+            console.log('取消上传');
+        }
+        xhr.send(form);
+    }
+
+    btns[1].onclick = () => {
+        xhr.abort();
+    }
+</script>
+
+</html>
